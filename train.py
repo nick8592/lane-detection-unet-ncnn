@@ -13,7 +13,7 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = True
+DEBUG = False
 
 def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_epochs, writer=None):
     model.train()
