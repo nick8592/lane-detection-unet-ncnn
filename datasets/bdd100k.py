@@ -1,0 +1,36 @@
+import os
+from torch.utils.data import Dataset
+from PIL import Image
+import torchvision.transforms as T
+
+class BDD100KDataset(Dataset):
+    """Custom Dataset for BDD100K lane segmentation."""
+    def __init__(self, images_dir: str, masks_dir: str, transform: T.Compose = None, mask_transform: T.Compose = None, debug: bool = False):
+        self.images_dir = images_dir
+        self.masks_dir = masks_dir
+        self.transform = transform
+        self.mask_transform = mask_transform
+        self.image_files = sorted(os.listdir(images_dir))
+        self.mask_files = sorted(os.listdir(masks_dir))
+        if debug:
+            self.image_files = self.image_files[:100]
+            self.mask_files = self.mask_files[:100]
+        assert len(self.image_files) == len(self.mask_files), "Mismatch between images and masks"
+
+    def __len__(self) -> int:
+        return len(self.image_files)
+
+    def __getitem__(self, idx: int):
+        img_path = os.path.join(self.images_dir, self.image_files[idx])
+        mask_path = os.path.join(self.masks_dir, self.mask_files[idx])
+        image = Image.open(img_path).convert("RGB")
+        mask = Image.open(mask_path).convert("L")
+        if self.transform:
+            image = self.transform(image)
+        else:
+            image = T.ToTensor()(image)
+        if self.mask_transform:
+            mask = self.mask_transform(mask)
+        else:
+            mask = T.ToTensor()(mask)
+        return image, mask

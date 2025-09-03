@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints
+
+# VSCode
+.vscode/
+
+# Data
+*.h5
+*.npz
+*.npy
+*.csv
+
+# Logs and checkpoints
+runs/
+*.pth
+*.pt
+
+# Environment
+.env
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+*.log
+*.pid
+
+# Ignore config secrets
+config/*.secret.yaml
+
+# Ignore scripts output
+scripts/__pycache__/
+
+# Ignore models cache
+models/__pycache__/
+
+# Test, temp, and cache
+*.tmp
+*.bak
+.cache/
+
+
