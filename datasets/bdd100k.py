@@ -13,8 +13,8 @@ class BDD100KDataset(Dataset):
         self.image_files = sorted(os.listdir(images_dir))
         self.mask_files = sorted(os.listdir(masks_dir))
         if debug:
-            self.image_files = self.image_files[:100]
-            self.mask_files = self.mask_files[:100]
+            self.image_files = self.image_files[:10000]
+            self.mask_files = self.mask_files[:10000]
         assert len(self.image_files) == len(self.mask_files), "Mismatch between images and masks"
 
     def __len__(self) -> int:

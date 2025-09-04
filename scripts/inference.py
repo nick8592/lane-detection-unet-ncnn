@@ -1,16 +1,18 @@
 # --- Imports and Setup ---
 import os
 import sys
+
+# Add project root to sys.path for imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import yaml
 import torch
 import torch.nn as nn
 from PIL import Image
 import torchvision.transforms as T
+from tqdm import tqdm
 from models.unet import UNet
 from utils.checkpoint import load_checkpoint
-
-# Add project root to sys.path for imports
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # --- Inference Function ---
 def infer(model, device, image_path, transform):
@@ -29,7 +31,7 @@ def infer(model, device, image_path, transform):
     with torch.no_grad():
         output = model(input_tensor)
         pred_mask = torch.sigmoid(output).squeeze().cpu().numpy()
-        pred_mask = (pred_mask > 0.2).astype('uint8') * 255
+        pred_mask = (pred_mask > 0.5).astype('uint8') * 255
     # Resize mask back to original image size
     orig_size = image.size  # (width, height)
     mask_img = Image.fromarray(pred_mask)
@@ -71,11 +73,10 @@ def main():
         return
     os.makedirs(output_dir, exist_ok=True)
     image_files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-    for img_name in image_files:
+    for img_name in tqdm(image_files, desc="Inference", unit="img"):
         img_path = os.path.join(input_dir, img_name)
         mask_img = infer(model, device, img_path, infer_transform)
         mask_img.save(os.path.join(output_dir, f"mask_{img_name}"))
-        print(f"Saved: {os.path.join(output_dir, f'mask_{img_name}')}")
 
 # --- Entrypoint ---
 if __name__ == "__main__":

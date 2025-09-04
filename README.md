@@ -14,7 +14,8 @@ docker run -it --gpus all --shm-size=16g -v /home:/home <image_id>
 ```bash
 apt update && apt upgrade -y
 apt install python3 python3-pip -y
-apt install build-essential git cmake wget libprotobuf-dev protobuf-compiler libomp-dev libopencv-dev -y```
+apt install build-essential git cmake wget libprotobuf-dev protobuf-compiler libomp-dev libopencv-dev -y
+```
 
 ### 3. PyTorch Installation
 ```bash
@@ -22,9 +23,12 @@ pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 --extra-index-url http
 pip install -r requirements.txt
 ```
 
-## BDD100K Dataset
+---
 
-### Directory Tree
+## Dataset
+
+### BDD100K
+#### Directory Tree
 ```
 bdd100k
 ├── images
@@ -40,6 +44,35 @@ bdd100k
     └── polygons
 
 ```
+
+## Training Usage
+
+### 1. Edit Training Config
+Edit `config/train_config.yaml` to set dataset paths, batch size, epochs, learning rate, image size, and model parameters.
+
+### 2. Run Training
+```bash
+python3 scripts/train.py
+```
+Checkpoints and logs will be saved in the `checkpoints/` and `runs/` folders.
+
+TensorBoard logs are available in `runs/`. To view training progress:
+```bash
+tensorboard --logdir runs/
+```
+
+## Inference Usage
+
+### 1. Edit Inference Config
+Edit `config/inference_config.yaml` to set the trained checkpoint, input images directory, output directory, and model parameters.
+
+### 2. Run Inference
+```bash
+python3 scripts/inference.py
+```
+Output masks will be saved in the specified output directory. Progress is shown with tqdm.
+
+---
 
 ## Exporting Model for NCNN Deployment
 

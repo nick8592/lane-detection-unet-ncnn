@@ -1,5 +1,10 @@
 # --- Imports and Setup ---
 import os
+import sys
+
+# Add project root to sys.path for imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import yaml
 import torch
 import torch.nn as nn
@@ -14,7 +19,7 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = True  # Set to True for fast debugging (uses 100 samples)
+DEBUG = True  # Set to True for fast debugging
 
 # --- Training Loop ---
 def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_epochs, writer=None):
