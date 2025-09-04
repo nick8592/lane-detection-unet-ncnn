@@ -13,7 +13,7 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = False
+DEBUG = True
 
 def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_epochs, writer=None):
     model.train()
@@ -134,7 +134,7 @@ if __name__ == "__main__":
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.AdamW(model.parameters(), lr=config["lr"])
     exp_name = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    checkpoint_dir = os.path.join("checkpoints", exp_name)
+    checkpoint_dir = os.path.join("checkpoints", f"{exp_name}/weights")
     os.makedirs(checkpoint_dir, exist_ok=True)
     train(model, train_loader, val_loader, criterion, optimizer, device, config, checkpoint_dir)
     # Save final model
