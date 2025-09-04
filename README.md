@@ -38,22 +38,33 @@ pip install -r requirements.txt
 ## Dataset
 
 ### BDD100K
-#### Directory Tree
-```
-bdd100k
-├── images
-│   └── 100k
-│       ├── test
-│       ├── train
-│       └── val
-└── lane
-    ├── colormaps
-    ├── masks
-    │   ├── traind
-    │   └── val
-    └── polygons
+BDD100K is a large-scale driving video dataset for diverse road scenes, widely used for autonomous driving research. This project uses the lane segmentation subset, which provides pixel-level lane annotations for training semantic segmentation models.
 
+#### Download & Preparation
+- Official website: https://bdd-data.berkeley.edu/
+- Download the images and lane mask annotations from the BDD100K website or via their download scripts.
+- Organize the dataset as follows:
 ```
+bdd100k/
+├── images/
+│   └── 100k/
+│       ├── train/
+│       ├── val/
+│       └── test/
+└── lane/
+  ├── colormaps/
+  ├── masks/
+  │   ├── train/
+  │   └── val/
+  └── polygons/
+```
+- `images/100k/train`, `val`, and `test` contain the raw images.
+- `lane/masks/train` and `val` contain binary lane segmentation masks.
+- `lane/colormaps` and `lane/polygons` provide additional annotation formats.
+
+#### Usage in This Project
+- Update `config/train_config.yaml` and `config/inference_config.yaml` to point to your local BDD100K image and mask directories.
+- The dataset loader expects images and masks to be sorted and matched by filename.
 
 ## Training Usage
 
@@ -147,3 +158,35 @@ This will save the output mask as `output_mask.png`.
 - For ARM cross-compilation, set toolchain and paths as needed.
 
 ---
+
+## Codebase Directory Tree
+```
+UNet/
+├── checkpoints/
+├── config/
+│   ├── inference_config.yaml
+│   └── train_config.yaml
+├── datasets/
+│   └── bdd100k.py
+├── export/
+│   └── export_to_pnnx.py
+├── models/
+│   └── unet.py
+├── ncnn/
+├── ncnn_deploy/
+│   ├── CMakeLists.txt
+│   ├── build/
+│   ├── main.cpp
+│   └── ncnn_models/
+├── requirements.txt
+├── runs/
+├── scripts/
+│   ├── inference.py
+│   └── train.py
+├── utils/
+│   ├── checkpoint.py
+│   └── metrics.py
+├── LICENSE
+├── README.md
+└── .gitignore
+```
