@@ -19,6 +19,7 @@ __pycache__/
 # Logs and checkpoints
 runs/
 checkpoints/
+*.pt
 
 # Environment
 .env

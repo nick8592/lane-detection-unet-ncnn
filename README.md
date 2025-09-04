@@ -41,3 +41,25 @@ bdd100k
     └── polygons
 
 ```
+
+## Exporting Model for NCNN Deployment
+
+### 1. Export PyTorch Model to TorchScript
+Run the export script to convert your trained UNet model to TorchScript:
+```bash
+python export/export_to_pnnx.py
+```
+This will generate `unet_jit.pt` in `export/ncnn_models/`.
+
+### 2. Convert TorchScript to NCNN Format with pnnx
+Run pnnx to generate NCNN model files:
+```bash
+pnnx export/ncnn_models/unet_jit.pt inputshape=[1,3,256,256]
+```
+This will create `unet_jit.param` and `unet_jit.bin` in `export/ncnn_models/`.
+
+### 3. Deploy with NCNN
+Use the generated `.param` and `.bin` files in your NCNN C++/Android/ARM application.
+Refer to [NCNN documentation](https://github.com/Tencent/ncnn/wiki) for integration details.
+
+---
