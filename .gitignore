@@ -48,7 +48,9 @@ models/__pycache__/
 .cache/
 
 # NCNN
-export/ncnn_models/
+ncnn/
+ncnn_deploy/build/
+ncnn_deploy/ncnn_models/
 *.onnx
 *.param
 *.bin

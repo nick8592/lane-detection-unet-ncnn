@@ -7,3 +7,7 @@ tensorboard
 six
 protobuf==3.20.3
 pnnx
+opencv-python-headless
+onnx
+onnxsim
+seaborn
