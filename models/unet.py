@@ -1,9 +1,16 @@
+# --- Imports ---
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# --- DoubleConv Block ---
 class DoubleConv(nn.Module):
-    """(Conv => BN => ReLU) * 2"""
+    """
+    (Conv => BN => ReLU) * 2 block used in UNet encoder/decoder.
+    Args:
+        in_channels: Number of input channels
+        out_channels: Number of output channels
+    """
     def __init__(self, in_channels: int, out_channels: int):
         super().__init__()
         self.double_conv = nn.Sequential(
@@ -18,8 +25,14 @@ class DoubleConv(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.double_conv(x)
 
+# --- UNet Model ---
 class UNet(nn.Module):
-    """U-Net: Convolutional Networks for Biomedical Image Segmentation"""
+    """
+    U-Net: Convolutional Networks for Biomedical Image Segmentation
+    Args:
+        in_channels: Number of input channels
+        out_channels: Number of output channels
+    """
     def __init__(self, in_channels: int = 3, out_channels: int = 1):
         super().__init__()
         self.encoder1 = DoubleConv(in_channels, 64)
@@ -42,6 +55,13 @@ class UNet(nn.Module):
         self.final_conv = nn.Conv2d(64, out_channels, kernel_size=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass of UNet.
+        Args:
+            x: Input tensor of shape (B, C, H, W)
+        Returns:
+            Output tensor of shape (B, out_channels, H, W)
+        """
         enc1 = self.encoder1(x)
         enc2 = self.encoder2(self.pool1(enc1))
         enc3 = self.encoder3(self.pool2(enc2))
@@ -62,6 +82,7 @@ class UNet(nn.Module):
         out = self.final_conv(dec1)
         return out
 
+# --- Model Summary and FLOPs (Optional) ---
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=3, out_channels=1).to(device)

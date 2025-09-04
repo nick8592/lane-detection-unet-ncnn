@@ -1,3 +1,4 @@
+# --- Imports and Setup ---
 import os
 import sys
 import yaml
@@ -11,7 +12,18 @@ from utils.checkpoint import load_checkpoint
 # Add project root to sys.path for imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# --- Inference Function ---
 def infer(model, device, image_path, transform):
+    """
+    Run inference on a single image and return the predicted mask resized to original resolution.
+    Args:
+        model: Trained UNet model
+        device: torch.device
+        image_path: Path to input image
+        transform: Preprocessing transform
+    Returns:
+        mask_img: PIL Image of predicted mask resized to original image size
+    """
     image = Image.open(image_path).convert("RGB")
     input_tensor = transform(image).unsqueeze(0).to(device)
     with torch.no_grad():
@@ -24,7 +36,12 @@ def infer(model, device, image_path, transform):
     mask_img = mask_img.resize(orig_size, resample=Image.NEAREST)
     return mask_img
 
+# --- Main Inference Loop ---
 def main():
+    """
+    Main inference loop.
+    Loads config, model, checkpoint, runs inference on all images in input dir, saves masks.
+    """
     # Load config
     with open("config/inference_config.yaml", "r") as f:
         config = yaml.safe_load(f)
@@ -58,7 +75,8 @@ def main():
         img_path = os.path.join(input_dir, img_name)
         mask_img = infer(model, device, img_path, infer_transform)
         mask_img.save(os.path.join(output_dir, f"mask_{img_name}"))
-        print(f"Saved: {os.path.join(output_dir, f'mask_{img_name}')})")
+        print(f"Saved: {os.path.join(output_dir, f'mask_{img_name}')}")
 
+# --- Entrypoint ---
 if __name__ == "__main__":
     main()

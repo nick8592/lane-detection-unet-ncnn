@@ -1,3 +1,4 @@
+# --- Imports and Setup ---
 import os
 import yaml
 import torch
@@ -13,9 +14,14 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = True
+DEBUG = True  # Set to True for fast debugging (uses 100 samples)
 
+# --- Training Loop ---
 def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_epochs, writer=None):
+    """
+    Train the model for one epoch.
+    Logs images and metrics to TensorBoard.
+    """
     model.train()
     running_loss = 0.0
     iou_score = 0.0
@@ -46,7 +52,12 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_ep
         writer.add_scalar("Loss/Train", epoch_loss, epoch)
     return epoch_loss
 
+# --- Validation Loop ---
 def validate(model, loader, criterion, device, epoch, total_epochs, writer=None):
+    """
+    Validate the model for one epoch.
+    Logs images and metrics to TensorBoard.
+    """
     model.eval()
     val_loss = 0.0
     iou_score = 0.0
@@ -78,8 +89,12 @@ def validate(model, loader, criterion, device, epoch, total_epochs, writer=None)
     print(f"Validation: Loss={val_loss:.4f}, IoU={iou_score:.4f}, Dice(F1)={dice_score:.4f}")
     return val_loss
 
-def train(model, train_loader, val_loader, criterion, optimizer, device, config, checkpoint_dir):
-    exp_name = os.path.basename(checkpoint_dir)
+# --- Main Training Function ---
+def train(model, train_loader, val_loader, criterion, optimizer, device, config, exp_name, checkpoint_dir):
+    """
+    Main training loop.
+    Handles warmup, checkpoint saving, and TensorBoard logging.
+    """
     scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.1, end_factor=1.0, total_iters=config["warmup_epochs"])
     log_dir = f"runs/{exp_name}"
     writer = SummaryWriter(log_dir)
@@ -104,7 +119,12 @@ def train(model, train_loader, val_loader, criterion, optimizer, device, config,
             print(f"Warm-up: Adjusted LR to {optimizer.param_groups[0]['lr']:.6f}")
     writer.close()
 
+# --- Main Entrypoint ---
 if __name__ == "__main__":
+    """
+    Load config, set up device, model, transforms, datasets, loaders, optimizer.
+    Create experiment folder for checkpoints. Run training and save final model.
+    """
     with open("config/train_config.yaml", "r") as f:
         config = yaml.safe_load(f)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -136,7 +156,7 @@ if __name__ == "__main__":
     exp_name = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     checkpoint_dir = os.path.join("checkpoints", f"{exp_name}/weights")
     os.makedirs(checkpoint_dir, exist_ok=True)
-    train(model, train_loader, val_loader, criterion, optimizer, device, config, checkpoint_dir)
+    train(model, train_loader, val_loader, criterion, optimizer, device, config, exp_name, checkpoint_dir)
     # Save final model
     final_model_path = os.path.join(checkpoint_dir, "unet_final.pt")
     save_checkpoint(model, optimizer, config["epochs"], None, final_model_path)
