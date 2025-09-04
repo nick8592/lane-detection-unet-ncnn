@@ -22,7 +22,7 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = True  # Set to True for fast debugging
+DEBUG = False  # Set to True for fast debugging
 
 # --- Training Loop ---
 def train_one_epoch(
