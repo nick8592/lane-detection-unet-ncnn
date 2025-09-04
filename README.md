@@ -112,7 +112,7 @@ pnnx ncnn_deploy/ncnn_models/unet_jit.pt inputshape=[1,3,256,256]
 This will create `unet_jit.param` and `unet_jit.bin` in `export/ncnn_models/`.
 
 ### 3. Deploy with NCNN
-Use the generated `.param` and `.bin` files in your NCNN C++/Android/ARM application.
+Use the generated `.param` and `.bin` files for the later NCNN C++ deployment.
 Refer to [NCNN documentation](https://github.com/Tencent/ncnn/wiki) for integration details.
 
 ## NCNN Library Setup
