@@ -1,5 +1,15 @@
-# UNet
-The goal of the UNet is to use BDD100K dataset lane split for lane segmentation. Then use NCNN framework to deploy on the ARM platform.
+# UNet Lane Segmentation & NCNN Deployment
+
+This repository provides a complete pipeline for lane segmentation using a UNet model trained on the BDD100K dataset. It includes modular scripts for training, validation, and inference, with configuration-driven workflows and TensorBoard logging. The project supports exporting PyTorch models for deployment with the NCNN framework, enabling efficient inference on ARM and x86 platforms via C++.
+
+Features:
+- UNet architecture for lane segmentation
+- BDD100K dataset integration
+- Configurable training and inference scripts
+- Checkpointing and metrics
+- TensorBoard support
+- Model export for NCNN (TorchScript → pnnx → NCNN)
+- C++ deployment example with NCNN and OpenCV
 
 ---
 
