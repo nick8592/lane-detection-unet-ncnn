@@ -112,7 +112,6 @@ if __name__ == "__main__":
     train_transform = T.Compose([
         T.Resize((config["img_size"], config["img_size"])),
         T.RandomHorizontalFlip(),
-        T.RandomRotation(degrees=10),
         T.ToTensor(),
     ])
     val_transform = T.Compose([
