@@ -1,9 +1,12 @@
-# --- Imports and Setup ---
+
+"""
+Training script for UNet lane segmentation on BDD100K dataset.
+Handles config loading, checkpointing, logging, and reproducibility.
+"""
 import os
 import sys
-
-# Add project root to sys.path for imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from typing import Any, Dict
 
 import yaml
 import torch
@@ -22,7 +25,16 @@ from utils.checkpoint import save_checkpoint
 DEBUG = True  # Set to True for fast debugging
 
 # --- Training Loop ---
-def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_epochs, writer=None):
+def train_one_epoch(
+    model: torch.nn.Module,
+    loader: torch.utils.data.DataLoader,
+    criterion: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
+    device: torch.device,
+    epoch: int,
+    total_epochs: int,
+    writer: Any = None
+) -> float:
     """
     Train the model for one epoch.
     Logs images and metrics to TensorBoard.
@@ -58,7 +70,15 @@ def train_one_epoch(model, loader, criterion, optimizer, device, epoch, total_ep
     return epoch_loss
 
 # --- Validation Loop ---
-def validate(model, loader, criterion, device, epoch, total_epochs, writer=None):
+def validate(
+    model: torch.nn.Module,
+    loader: torch.utils.data.DataLoader,
+    criterion: torch.nn.Module,
+    device: torch.device,
+    epoch: int,
+    total_epochs: int,
+    writer: Any = None
+) -> float:
     """
     Validate the model for one epoch.
     Logs images and metrics to TensorBoard.
@@ -130,8 +150,21 @@ if __name__ == "__main__":
     Load config, set up device, model, transforms, datasets, loaders, optimizer.
     Create experiment folder for checkpoints. Run training and save final model.
     """
-    with open("config/train_config.yaml", "r") as f:
-        config = yaml.safe_load(f)
+    # Load config and save a copy with datetime postname in checkpoint folder
+    config_path = "config/train_config.yaml"
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    with open(config_path, "r") as f:
+        config: Dict[str, Any] = yaml.safe_load(f)
+
+    exp_name = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    checkpoint_dir = os.path.join("checkpoints", f"{exp_name}/weights")
+    os.makedirs(checkpoint_dir, exist_ok=True)
+
+    # Save config copy
+    config_save_path = os.path.join("checkpoints", exp_name, f"train_config_{exp_name}.yaml")
+    with open(config_save_path, "w") as f:
+        yaml.dump(config, f)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     train_transform = T.Compose([
@@ -158,9 +191,6 @@ if __name__ == "__main__":
     val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
     criterion = nn.BCEWithLogitsLoss()
     optimizer = optim.AdamW(model.parameters(), lr=config["lr"])
-    exp_name = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    checkpoint_dir = os.path.join("checkpoints", f"{exp_name}/weights")
-    os.makedirs(checkpoint_dir, exist_ok=True)
     train(model, train_loader, val_loader, criterion, optimizer, device, config, exp_name, checkpoint_dir)
     # Save final model
     final_model_path = os.path.join(checkpoint_dir, "unet_final.pt")

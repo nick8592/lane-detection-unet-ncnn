@@ -1,14 +1,25 @@
-import torch
 
-def save_checkpoint(model, optimizer, epoch, val_loss=None, filename=None):
+"""
+Checkpoint utility functions for saving and loading model state.
+"""
+import torch
+from typing import Optional
+
+def save_checkpoint(
+    model: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
+    epoch: int,
+    val_loss: Optional[float] = None,
+    filename: Optional[str] = None
+) -> None:
     """
     Save model and optimizer state to a checkpoint file.
     Args:
-        model: PyTorch model (nn.Module)
-        optimizer: PyTorch optimizer
-        epoch: Current epoch (int)
-        val_loss: Validation loss (float, optional)
-        filename: Path to save checkpoint (str)
+        model (torch.nn.Module): Model to save
+        optimizer (torch.optim.Optimizer): Optimizer to save
+        epoch (int): Current epoch
+        val_loss (float, optional): Validation loss
+        filename (str, optional): Path to save checkpoint
     """
     state = {
         'epoch': epoch,
@@ -22,7 +33,11 @@ def save_checkpoint(model, optimizer, epoch, val_loss=None, filename=None):
     else:
         raise ValueError("filename must be provided to save checkpoint.")
 
-def load_checkpoint(filename, model, optimizer=None):
+def load_checkpoint(
+    filename: str,
+    model: torch.nn.Module,
+    optimizer: Optional[torch.optim.Optimizer] = None
+) -> dict:
     """
     Load model and optimizer state from a checkpoint file.
     Args:

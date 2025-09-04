@@ -1,4 +1,8 @@
-# --- Imports ---
+
+"""
+UNet model definition for lane segmentation.
+Includes DoubleConv block and UNet architecture.
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -12,6 +16,11 @@ class DoubleConv(nn.Module):
         out_channels: Number of output channels
     """
     def __init__(self, in_channels: int, out_channels: int):
+        """
+        Args:
+            in_channels (int): Number of input channels
+            out_channels (int): Number of output channels
+        """
         super().__init__()
         self.double_conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1),
@@ -23,6 +32,13 @@ class DoubleConv(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for DoubleConv block.
+        Args:
+            x (torch.Tensor): Input tensor
+        Returns:
+            torch.Tensor: Output tensor
+        """
         return self.double_conv(x)
 
 # --- UNet Model ---
@@ -34,6 +50,11 @@ class UNet(nn.Module):
         out_channels: Number of output channels
     """
     def __init__(self, in_channels: int = 3, out_channels: int = 1):
+        """
+        Args:
+            in_channels (int): Number of input channels
+            out_channels (int): Number of output channels
+        """
         super().__init__()
         self.encoder1 = DoubleConv(in_channels, 64)
         self.pool1 = nn.MaxPool2d(kernel_size=2)
@@ -55,6 +76,13 @@ class UNet(nn.Module):
         self.final_conv = nn.Conv2d(64, out_channels, kernel_size=1)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass for UNet model.
+        Args:
+            x (torch.Tensor): Input tensor
+        Returns:
+            torch.Tensor: Output tensor
+        """
         """
         Forward pass of UNet.
         Args:

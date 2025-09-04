@@ -1,3 +1,7 @@
+"""
+Metrics utility functions for segmentation evaluation.
+"""
+
 def compute_iou(pred, target, threshold=0.5):
     pred = (pred > threshold).float()
     target = (target > threshold).float()
@@ -7,6 +11,15 @@ def compute_iou(pred, target, threshold=0.5):
     return iou.mean().item()
 
 def compute_dice(pred, target, threshold=0.5):
+    """
+    Compute Dice coefficient (F1 score).
+    Args:
+        pred (Tensor): Predicted mask
+        target (Tensor): Ground truth mask
+        threshold (float): Threshold for binarization
+    Returns:
+        float: Dice score
+    """
     pred = (pred > threshold).float()
     target = (target > threshold).float()
     intersection = (pred * target).sum(dim=(1,2,3))

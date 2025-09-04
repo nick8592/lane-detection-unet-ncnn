@@ -1,9 +1,13 @@
-# --- Imports and Setup ---
+
+"""
+Inference script for UNet lane segmentation on BDD100K dataset.
+Loads config, model, checkpoint, and runs batch inference with reproducibility.
+"""
 import os
 import sys
-
-# Add project root to sys.path for imports
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from typing import Any, Dict
+
 
 import yaml
 import torch
@@ -15,7 +19,12 @@ from models.unet import UNet
 from utils.checkpoint import load_checkpoint
 
 # --- Inference Function ---
-def infer(model, device, image_path, transform):
+def infer(
+    model: torch.nn.Module,
+    device: torch.device,
+    image_path: str,
+    transform: Any
+) -> Image.Image:
     """
     Run inference on a single image and return the predicted mask resized to original resolution.
     Args:
@@ -44,9 +53,24 @@ def main():
     Main inference loop.
     Loads config, model, checkpoint, runs inference on all images in input dir, saves masks.
     """
-    # Load config
-    with open("config/inference_config.yaml", "r") as f:
-        config = yaml.safe_load(f)
+    # Load config and save a copy with datetime postname in output directory
+    config_path = "config/inference_config.yaml"
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    with open(config_path, "r") as f:
+        config: Dict[str, Any] = yaml.safe_load(f)
+
+    # Prepare output directory and save config copy
+    from datetime import datetime
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_dir = config.get("inference_output_dir", None)
+    if output_dir is None:
+        print("Please specify 'inference_output_dir' in config/inference_config.yaml")
+        return
+    os.makedirs(output_dir, exist_ok=True)
+    config_save_path = os.path.join(output_dir, f"inference_config_{timestamp}.yaml")
+    with open(config_save_path, "w") as f:
+        yaml.dump(config, f)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"])
     # Load checkpoint
@@ -63,20 +87,17 @@ def main():
         T.ToTensor(),
     ])
     # Input/output dirs
-    input_dir = config.get("inference_images_dir", None)
-    output_dir = config.get("inference_output_dir", None)
-    if input_dir is None:
+    input_img_dir = config.get("inference_images_dir", None)
+    output_img_dir = os.path.join(output_dir, f"inference_results_{timestamp}")
+    if input_img_dir is None:
         print("Please specify 'inference_images_dir' in config/inference_config.yaml")
         return
-    if output_dir is None:
-        print("Please specify 'inference_output_dir' in config/inference_config.yaml")
-        return
-    os.makedirs(output_dir, exist_ok=True)
-    image_files = [f for f in os.listdir(input_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
+    os.makedirs(output_img_dir, exist_ok=True)
+    image_files = [f for f in os.listdir(input_img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
     for img_name in tqdm(image_files, desc="Inference", unit="img"):
-        img_path = os.path.join(input_dir, img_name)
+        img_path = os.path.join(input_img_dir, img_name)
         mask_img = infer(model, device, img_path, infer_transform)
-        mask_img.save(os.path.join(output_dir, f"mask_{img_name}"))
+        mask_img.save(os.path.join(output_img_dir, f"mask_{img_name}"))
 
 # --- Entrypoint ---
 if __name__ == "__main__":
