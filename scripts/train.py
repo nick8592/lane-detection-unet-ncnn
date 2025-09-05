@@ -8,8 +8,17 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Any, Dict
 
-import yaml
+# Set random seed for reproducibility
+import random
+import numpy as np
 import torch
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+torch.manual_seed(SEED)
+torch.cuda.manual_seed_all(SEED)
+
+import yaml
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
@@ -22,7 +31,7 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = False  # Set to True for fast debugging
+DEBUG = True  # Set to True for fast debugging
 
 # --- Training Loop ---
 def train_one_epoch(
@@ -169,7 +178,6 @@ if __name__ == "__main__":
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     train_transform = T.Compose([
         T.Resize((config["img_size"], config["img_size"])),
-        T.RandomHorizontalFlip(),
         T.ToTensor(),
     ])
     val_transform = T.Compose([
@@ -179,13 +187,11 @@ if __name__ == "__main__":
     # Datasets and loaders
     train_dataset = BDD100KDataset(
         config["train_images_dir"], config["train_masks_dir"],
-        transform=train_transform, mask_transform=train_transform,
-        debug=DEBUG
+        transform=train_transform, debug=DEBUG
     )
     val_dataset = BDD100KDataset(
         config["val_images_dir"], config["val_masks_dir"],
-        transform=val_transform, mask_transform=val_transform,
-        debug=DEBUG
+        transform=val_transform, debug=DEBUG
     )
     train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
