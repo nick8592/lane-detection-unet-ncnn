@@ -63,9 +63,8 @@ def train_one_epoch(
         loss.backward()
         optimizer.step()
         running_loss += loss.item() * images.size(0)
-        preds = torch.sigmoid(outputs)
-        iou_score += compute_iou(preds, masks)
-        dice_score += compute_dice(preds, masks)
+        iou_score += compute_iou(outputs, masks)
+        dice_score += compute_dice(outputs, masks)
         num_batches += 1
         progress_bar.set_postfix(loss=loss.item())
     epoch_loss = running_loss / len(loader.dataset)
@@ -74,7 +73,7 @@ def train_one_epoch(
     if writer is not None:
         writer.add_images("Train/Input", images, epoch)
         writer.add_images("Train/Mask", masks, epoch)
-        writer.add_images("Train/Prediction", torch.sigmoid(outputs), epoch)
+        writer.add_images("Train/Prediction", outputs, epoch)
         writer.add_scalar("Loss/Train", epoch_loss, epoch)
     return epoch_loss
 
@@ -105,9 +104,8 @@ def validate(
             outputs = model(images)
             loss = criterion(outputs, masks)
             val_loss += loss.item() * images.size(0)
-            preds = torch.sigmoid(outputs)
-            iou_score += compute_iou(preds, masks)
-            dice_score += compute_dice(preds, masks)
+            iou_score += compute_iou(outputs, masks)
+            dice_score += compute_dice(outputs, masks)
             num_batches += 1
             progress_bar.set_postfix(loss=loss.item())
     val_loss /= len(loader.dataset)
@@ -116,7 +114,7 @@ def validate(
     if writer is not None:
         writer.add_images("Val/Input", images, epoch)
         writer.add_images("Val/Mask", masks, epoch)
-        writer.add_images("Val/Prediction", torch.sigmoid(outputs), epoch)
+        writer.add_images("Val/Prediction", outputs, epoch)
         writer.add_scalar("Loss/Val", val_loss, epoch)
         writer.add_scalar("IoU/Val", iou_score, epoch)
         writer.add_scalar("Dice/Val", dice_score, epoch)
@@ -171,8 +169,9 @@ if __name__ == "__main__":
     os.makedirs(checkpoint_dir, exist_ok=True)
 
     # Save config copy
-    config_save_path = os.path.join("checkpoints", exp_name, f"train_config_{exp_name}.yaml")
-    with open(config_save_path, "w") as f:
+    config_save_path = os.path.join("checkpoints", exp_name, "config")
+    os.makedirs(config_save_path, exist_ok=True)
+    with open(f"{config_save_path}/train_config.yaml", "w") as f:
         yaml.dump(config, f)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
@@ -195,7 +194,7 @@ if __name__ == "__main__":
     )
     train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
-    criterion = nn.BCEWithLogitsLoss()
+    criterion = nn.BCELoss()
     optimizer = optim.AdamW(model.parameters(), lr=config["lr"])
     train(model, train_loader, val_loader, criterion, optimizer, device, config, exp_name, checkpoint_dir)
     # Save final model

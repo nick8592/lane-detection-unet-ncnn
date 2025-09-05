@@ -8,10 +8,9 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Any, Dict
 
-
 import yaml
 import torch
-import torch.nn as nn
+import numpy as np
 from PIL import Image
 import torchvision.transforms as T
 from tqdm import tqdm
@@ -39,12 +38,13 @@ def infer(
     input_tensor = transform(image).unsqueeze(0).to(device)
     with torch.no_grad():
         output = model(input_tensor)
-        pred_mask = torch.sigmoid(output).squeeze().cpu().numpy()
-        pred_mask = (pred_mask > 0.5).astype('uint8') * 255
+        output = output.squeeze().cpu().numpy()
+        output = np.uint8(output * 255)
+        
     # Resize mask back to original image size
     orig_size = image.size  # (width, height)
-    mask_img = Image.fromarray(pred_mask)
-    mask_img = mask_img.resize(orig_size, resample=Image.NEAREST)
+    mask_img = Image.fromarray(output)
+    mask_img = mask_img.resize(orig_size, resample=Image.BILINEAR)
     return mask_img
 
 # --- Main Inference Loop ---
@@ -60,19 +60,31 @@ def main():
     with open(config_path, "r") as f:
         config: Dict[str, Any] = yaml.safe_load(f)
 
-    # Prepare output directory and save config copy
-    from datetime import datetime
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    # Prepare output directory
     output_dir = config.get("inference_output_dir", None)
     if output_dir is None:
         print("Please specify 'inference_output_dir' in config/inference_config.yaml")
         return
     os.makedirs(output_dir, exist_ok=True)
-    config_save_path = os.path.join(output_dir, f"inference_config_{timestamp}.yaml")
-    with open(config_save_path, "w") as f:
+
+    # Input/output dirs
+    input_img_dir = config.get("inference_images_dir", None)
+    if input_img_dir is None:
+        print("Please specify 'inference_images_dir' in config/inference_config.yaml")
+        return
+    output_img_dir = os.path.join(output_dir, f"inference_results")
+    os.makedirs(output_img_dir, exist_ok=True)
+
+    # Save config copy
+    config_save_path = os.path.join(output_dir, "config")
+    os.makedirs(config_save_path, exist_ok=True)
+    with open(f"{config_save_path}/inference_config.yaml", "w") as f:
         yaml.dump(config, f)
+    
+    # Set device and load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"])
+
     # Load checkpoint
     checkpoint_path = config.get("inference_checkpoint", None)
     if checkpoint_path is None:
@@ -81,18 +93,13 @@ def main():
     load_checkpoint(checkpoint_path, model)
     model.to(device)
     model.eval()
+
     # Image transform
     infer_transform = T.Compose([
         T.Resize((config["img_size"], config["img_size"])),
         T.ToTensor(),
     ])
-    # Input/output dirs
-    input_img_dir = config.get("inference_images_dir", None)
-    output_img_dir = os.path.join(output_dir, f"inference_results_{timestamp}")
-    if input_img_dir is None:
-        print("Please specify 'inference_images_dir' in config/inference_config.yaml")
-        return
-    os.makedirs(output_img_dir, exist_ok=True)
+    
     image_files = [f for f in os.listdir(input_img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
     for img_name in tqdm(image_files, desc="Inference", unit="img"):
         img_path = os.path.join(input_img_dir, img_name)

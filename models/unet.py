@@ -108,7 +108,7 @@ class UNet(nn.Module):
         dec1 = torch.cat([dec1, enc1], dim=1)
         dec1 = self.decoder1(dec1)
         out = self.final_conv(dec1)
-        return out
+        return torch.sigmoid(out)
 
 # --- Model Summary and FLOPs (Optional) ---
 if __name__ == "__main__":
