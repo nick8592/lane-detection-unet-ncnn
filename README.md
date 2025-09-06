@@ -13,29 +13,6 @@ Features:
 
 ---
 
-## Repository Branches
-
-This repository uses multiple branches for different model architectures and experiments:
-
-- `unet` (default): Standard UNet model and pipeline
-- `unet-depthwise`: UNet with depthwise separable convolutions
-
-To switch branches:
-```bash
-git checkout <branch-name>
-```
-For example, to switch to the depthwise UNet branch:
-```bash
-git checkout unet-depthwise
-```
-To list all branches:
-```bash
-git branch -a
-```
-Remote branches are prefixed with `remotes/origin/`.
-
----
-
 ## Setup Instructions
 
 ### 1. Quick Start (Docker)

@@ -15,6 +15,7 @@ from PIL import Image, ImageOps
 import torchvision.transforms as T
 from tqdm import tqdm
 from models.unet import UNet
+from models.unet_depthwise import UNetDepthwise
 from utils.checkpoint import load_checkpoint
 
 # --- Inference Function ---
@@ -100,7 +101,8 @@ def main():
     
     # Set device and load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"])
+    # model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
 
     # Load checkpoint
     checkpoint_path = config.get("inference_checkpoint", None)

@@ -24,6 +24,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from models.unet import UNet
+from models.unet_depthwise import UNetDepthwise
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -176,7 +177,8 @@ if __name__ == "__main__":
     
     # Set device and model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    # model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
 
     # Transforms
     train_transform = T.Compose([
