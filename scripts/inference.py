@@ -100,7 +100,6 @@ def main():
     
     # Set device and load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = "cpu"
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"])
 
     # Load checkpoint
