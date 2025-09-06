@@ -63,7 +63,7 @@ bdd100k/
 - `lane/colormaps` and `lane/polygons` provide additional annotation formats.
 
 #### Usage in This Project
-- Update `config/train_config.yaml` and `config/inference_config.yaml` to point to your local BDD100K image and mask directories.
+- Update `config/train_config.yaml` and `config/test_config.yaml` to point to your local BDD100K image and mask directories.
 - The dataset loader expects images and masks to be sorted and matched by filename.
 
 ## Training Usage
@@ -85,11 +85,11 @@ tensorboard --logdir runs/
 ## Inference Usage
 
 ### 1. Edit Inference Config
-Edit `config/inference_config.yaml` to set the trained checkpoint, input images directory, output directory, and model parameters.
+Edit `config/test_config.yaml` to set the trained checkpoint, input images directory, output directory, and model parameters.
 
 ### 2. Run Inference
 ```bash
-python3 scripts/inference.py
+python3 scripts/test.py
 ```
 Output masks will be saved in the specified output directory. Progress is shown with tqdm.
 
@@ -164,7 +164,7 @@ This will save the output mask as `output_mask.png`.
 UNet/
 ├── checkpoints/
 ├── config/
-│   ├── inference_config.yaml
+│   ├── test_config.yaml
 │   └── train_config.yaml
 ├── datasets/
 │   └── bdd100k.py
@@ -181,7 +181,7 @@ UNet/
 ├── requirements.txt
 ├── runs/
 ├── scripts/
-│   ├── inference.py
+│   ├── test.py
 │   └── train.py
 ├── utils/
 │   ├── checkpoint.py

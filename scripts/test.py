@@ -68,7 +68,7 @@ def main():
     Loads config, model, checkpoint, runs inference on all images in input dir, saves masks.
     """
     # Load config and save a copy with datetime postname in output directory
-    config_path = "config/inference_config.yaml"
+    config_path = "config/test_config.yaml"
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Config file not found: {config_path}")
     with open(config_path, "r") as f:
@@ -77,14 +77,14 @@ def main():
     # Prepare output directory
     output_dir = config.get("inference_output_dir", None)
     if output_dir is None:
-        print("Please specify 'inference_output_dir' in config/inference_config.yaml")
+        print("Please specify 'inference_output_dir' in config/test_config.yaml")
         return
     os.makedirs(output_dir, exist_ok=True)
 
     # Input dirs
     input_img_dir = config.get("inference_images_dir", None)
     if input_img_dir is None:
-        print("Please specify 'inference_images_dir' in config/inference_config.yaml")
+        print("Please specify 'inference_images_dir' in config/test_config.yaml")
         return
     
     # Output dirs
@@ -96,7 +96,7 @@ def main():
     # Save config copy
     config_save_path = os.path.join(output_dir, "config")
     os.makedirs(config_save_path, exist_ok=True)
-    with open(f"{config_save_path}/inference_config.yaml", "w") as f:
+    with open(f"{config_save_path}/test_config.yaml", "w") as f:
         yaml.dump(config, f)
     
     # Set device and load model
@@ -112,7 +112,7 @@ def main():
     # Load checkpoint
     checkpoint_path = config.get("inference_checkpoint", None)
     if checkpoint_path is None:
-        print("Please specify 'inference_checkpoint' in config/inference_config.yaml")
+        print("Please specify 'inference_checkpoint' in config/test_config.yaml")
         return
     load_checkpoint(checkpoint_path, device, model)
     model.to(device)
