@@ -1,6 +1,7 @@
-img_size: 256
-in_channels: 3
-out_channels: 1
 inference_checkpoint: "checkpoints/exp_20250906_105601/weights/unet_depthwise_best.pt"
 inference_images_dir: "/home/nick/Documents/dataset/bdd100k/images/100k/val"
 inference_output_dir: "checkpoints/exp_20250906_105601/bdd100k_val_outputs_1"
+model_type: "unet_depthwise"  # Options: "unet", "unet_depthwise"
+img_size: 256
+in_channels: 3
+out_channels: 1

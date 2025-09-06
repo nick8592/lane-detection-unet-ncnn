@@ -101,8 +101,13 @@ def main():
     
     # Set device and load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
-    model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    model_type = config.get("model_type", "unet")
+    if model_type == "unet":
+        model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    elif model_type == "unet_depthwise":
+        model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    else:
+        raise ValueError(f"Unknown model_type: {model_type}. Use 'unet' or 'unet_depthwise'.")
 
     # Load checkpoint
     checkpoint_path = config.get("inference_checkpoint", None)
