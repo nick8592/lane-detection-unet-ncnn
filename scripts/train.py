@@ -25,6 +25,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as T
 from models.unet import UNet
 from models.unet_depthwise import UNetDepthwise
+from models.unet_depthwise_nano import UNetDepthwiseNano
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -32,7 +33,6 @@ from datasets.bdd100k import BDD100KDataset
 from utils.metrics import compute_iou, compute_dice
 from utils.checkpoint import save_checkpoint
 
-DEBUG = False  # Set to True for fast debugging
 
 # --- Training Loop ---
 def train_one_epoch(
@@ -165,6 +165,11 @@ if __name__ == "__main__":
     with open(config_path, "r") as f:
         config: Dict[str, Any] = yaml.safe_load(f)
 
+    print("Loaded training config:")
+    for k, v in config.items():
+        print(f"  {k}: {v}")
+    print("\n")
+
     exp_name = f"exp_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     checkpoint_dir = os.path.join("checkpoints", f"{exp_name}/weights")
     os.makedirs(checkpoint_dir, exist_ok=True)
@@ -182,8 +187,10 @@ if __name__ == "__main__":
         model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise":
         model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    elif model_type == "unet_depthwise_nano":
+        model = UNetDepthwiseNano(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     else:
-        raise ValueError(f"Unknown model_type: {model_type}. Use 'unet' or 'unet_depthwise'.")
+        raise ValueError(f"Unknown model_type: {model_type}. Use 'unet', 'unet_depthwise', or 'unet_depthwise_nano'.")
 
     # Transforms
     train_transform = T.Compose([
@@ -197,11 +204,11 @@ if __name__ == "__main__":
     # Datasets and loaders
     train_dataset = BDD100KDataset(
         config["train_images_dir"], config["train_masks_dir"],
-        transform=train_transform, debug=DEBUG
+        transform=train_transform, debug=config.get("debug", False)
     )
     val_dataset = BDD100KDataset(
         config["val_images_dir"], config["val_masks_dir"],
-        transform=val_transform, debug=DEBUG
+        transform=val_transform, debug=config.get("debug", False)
     )
     train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)

@@ -16,6 +16,7 @@ import torchvision.transforms as T
 from tqdm import tqdm
 from models.unet import UNet
 from models.unet_depthwise import UNetDepthwise
+from models.unet_depthwise_nano import UNetDepthwiseNano
 from utils.checkpoint import load_checkpoint
 
 # --- Inference Function ---
@@ -106,8 +107,10 @@ def main():
         model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise":
         model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    elif model_type == "unet_depthwise_nano":
+        model = UNetDepthwiseNano(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     else:
-        raise ValueError(f"Unknown model_type: {model_type}. Use 'unet' or 'unet_depthwise'.")
+        raise ValueError(f"Unknown model_type: {model_type}. Use 'unet', 'unet_depthwise', or 'unet_depthwise_nano'.")
 
     # Load checkpoint
     checkpoint_path = config.get("inference_checkpoint", None)
