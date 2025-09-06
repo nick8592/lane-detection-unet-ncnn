@@ -6,12 +6,12 @@ Loads config, model, checkpoint, and runs batch inference with reproducibility.
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from typing import Any, Dict
+from typing import Any, Dict, Tuple
 
 import yaml
 import torch
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 import torchvision.transforms as T
 from tqdm import tqdm
 from models.unet import UNet
@@ -23,29 +23,42 @@ def infer(
     device: torch.device,
     image_path: str,
     transform: Any
-) -> Image.Image:
+) -> Tuple[Image.Image, Image.Image]:
     """
-    Run inference on a single image and return the predicted mask resized to original resolution.
-    Args:
-        model: Trained UNet model
-        device: torch.device
-        image_path: Path to input image
-        transform: Preprocessing transform
-    Returns:
-        mask_img: PIL Image of predicted mask resized to original image size
+    Run inference and return both mask and overlaid image.
     """
     image = Image.open(image_path).convert("RGB")
+
+    # Preprocess and predict
     input_tensor = transform(image).unsqueeze(0).to(device)
     with torch.no_grad():
         output = model(input_tensor)
         output = output.squeeze().cpu().numpy()
         output = np.uint8(output * 255)
-        
+
     # Resize mask back to original image size
     orig_size = image.size  # (width, height)
     mask_img = Image.fromarray(output)
     mask_img = mask_img.resize(orig_size, resample=Image.BILINEAR)
-    return mask_img
+
+    # Invert mask if needed (based on your setup)
+    inverted_mask = ImageOps.invert(mask_img.convert("L"))
+
+    # Create a color image (RGBA) for the mask overlay (green with alpha)
+    color_mask = Image.new("RGBA", orig_size, color=(0, 255, 0, 0))  # transparent
+    # Use inverted_mask as alpha channel, scale alpha to control transparency
+    alpha = inverted_mask.point(lambda p: int(p * 0.8))  # lane line transparency
+
+    # Put alpha channel into the green color mask
+    color_mask.putalpha(alpha)
+
+    # Convert original image to RGBA
+    image_rgba = image.convert("RGBA")
+
+    # Composite color mask only on masked areas over original image
+    overlay_img = Image.alpha_composite(image_rgba, color_mask).convert("RGB")
+
+    return mask_img, overlay_img
 
 # --- Main Inference Loop ---
 def main():
@@ -67,13 +80,17 @@ def main():
         return
     os.makedirs(output_dir, exist_ok=True)
 
-    # Input/output dirs
+    # Input dirs
     input_img_dir = config.get("inference_images_dir", None)
     if input_img_dir is None:
         print("Please specify 'inference_images_dir' in config/inference_config.yaml")
         return
-    output_img_dir = os.path.join(output_dir, f"inference_results")
-    os.makedirs(output_img_dir, exist_ok=True)
+    
+    # Output dirs
+    output_mask_dir = os.path.join(output_dir, f"inference_results", "masks")
+    os.makedirs(output_mask_dir, exist_ok=True)
+    output_overlay_dir = os.path.join(output_dir, f"inference_results", "overlay")
+    os.makedirs(output_overlay_dir, exist_ok=True)
 
     # Save config copy
     config_save_path = os.path.join(output_dir, "config")
@@ -83,6 +100,7 @@ def main():
     
     # Set device and load model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = "cpu"
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"])
 
     # Load checkpoint
@@ -90,7 +108,7 @@ def main():
     if checkpoint_path is None:
         print("Please specify 'inference_checkpoint' in config/inference_config.yaml")
         return
-    load_checkpoint(checkpoint_path, model)
+    load_checkpoint(checkpoint_path, device, model)
     model.to(device)
     model.eval()
 
@@ -103,8 +121,13 @@ def main():
     image_files = [f for f in os.listdir(input_img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
     for img_name in tqdm(image_files, desc="Inference", unit="img"):
         img_path = os.path.join(input_img_dir, img_name)
-        mask_img = infer(model, device, img_path, infer_transform)
-        mask_img.save(os.path.join(output_img_dir, f"mask_{img_name}"))
+        mask_img, overlay_img = infer(model, device, img_path, infer_transform)
+
+        # Save mask
+        mask_img.save(os.path.join(output_mask_dir, f"mask_{img_name}"))
+
+        # Save overlay image
+        overlay_img.save(os.path.join(output_overlay_dir, f"overlay_{img_name}"))
 
 # --- Entrypoint ---
 if __name__ == "__main__":

@@ -35,6 +35,7 @@ def save_checkpoint(
 
 def load_checkpoint(
     filename: str,
+    device: torch.device,
     model: torch.nn.Module,
     optimizer: Optional[torch.optim.Optimizer] = None
 ) -> dict:
@@ -47,7 +48,7 @@ def load_checkpoint(
     Returns:
         checkpoint (dict)
     """
-    checkpoint = torch.load(filename)
+    checkpoint = torch.load(filename, map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
     if optimizer and 'optimizer_state_dict' in checkpoint:
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])

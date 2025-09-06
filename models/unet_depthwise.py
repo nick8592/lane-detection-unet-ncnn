@@ -82,7 +82,7 @@ class UNetDepthwise(nn.Module):
         d1 = self.dec1(torch.cat([u1, e1], dim=1))
 
         out = self.final_conv(d1)
-        return out
+        return torch.sigmoid(out)
 
 # --- Model Summary and FLOPs (Optional) ---
 if __name__ == "__main__":

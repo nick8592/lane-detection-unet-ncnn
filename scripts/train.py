@@ -173,8 +173,12 @@ if __name__ == "__main__":
     os.makedirs(config_save_path, exist_ok=True)
     with open(f"{config_save_path}/train_config.yaml", "w") as f:
         yaml.dump(config, f)
+    
+    # Set device and model
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+
+    # Transforms
     train_transform = T.Compose([
         T.Resize((config["img_size"], config["img_size"])),
         T.ToTensor(),
