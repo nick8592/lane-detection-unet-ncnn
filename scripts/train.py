@@ -26,6 +26,7 @@ import torchvision.transforms as T
 from models.unet import UNet
 from models.unet_depthwise import UNetDepthwise
 from models.unet_depthwise_nano import UNetDepthwiseNano
+from models.unet_depthwise_small import UNetDepthwiseSmall
 from tqdm import tqdm
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
@@ -187,6 +188,8 @@ if __name__ == "__main__":
         model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise":
         model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    elif model_type == "unet_depthwise_small":
+        model = UNetDepthwiseSmall(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise_nano":
         model = UNetDepthwiseNano(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     else:

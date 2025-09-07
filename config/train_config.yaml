@@ -2,7 +2,7 @@ train_images_dir: "/home/nick/Documents/dataset/bdd100k/images/100k/train"
 train_masks_dir: "/home/nick/Documents/dataset/bdd100k/labels/lane/masks/train"
 val_images_dir: "/home/nick/Documents/dataset/bdd100k/images/100k/val"
 val_masks_dir: "/home/nick/Documents/dataset/bdd100k/labels/lane/masks/val"
-model_type: "unet_depthwise_nano"  # Options: "unet", "unet_depthwise", "unet_depthwise_nano"
+model_type: "unet_depthwise_small"  # Options: "unet", "unet_depthwise", "unet_depthwise_small", "unet_depthwise_nano"
 batch_size: 16
 warmup_epochs: 3
 epochs: 10
@@ -12,5 +12,5 @@ in_channels: 3
 out_channels: 1
 save_all_epochs: true
 save_best_model: true
-debug: true  # Set to true for fast debugging
+debug: false  # Set to true for fast debugging
 

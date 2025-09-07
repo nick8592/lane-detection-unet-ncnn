@@ -26,7 +26,7 @@ class DepthwiseSeparableConv(nn.Module):
         x = self.relu(x)
         return x
 
-class UNetDepthwiseNano(nn.Module):
+class UNetDepthwiseSmall(nn.Module):
     """
     UNet architecture using Depthwise Separable Convolutions.
     Args:
@@ -37,9 +37,13 @@ class UNetDepthwiseNano(nn.Module):
         super().__init__()
         self.enc1 = DepthwiseSeparableConv(in_channels, 64)
         self.pool1 = nn.MaxPool2d(2)
+        self.enc2 = DepthwiseSeparableConv(64, 128)
+        self.pool2 = nn.MaxPool2d(2)
 
-        self.bottleneck = DepthwiseSeparableConv(64, 128)
+        self.bottleneck = DepthwiseSeparableConv(128, 256)
 
+        self.up2 = nn.ConvTranspose2d(256, 128, kernel_size=2, stride=2)
+        self.dec2 = DepthwiseSeparableConv(256, 128)
         self.up1 = nn.ConvTranspose2d(128, 64, kernel_size=2, stride=2)
         self.dec1 = DepthwiseSeparableConv(128, 64)
 
@@ -49,12 +53,16 @@ class UNetDepthwiseNano(nn.Module):
         # Encoder
         e1 = self.enc1(x)
         p1 = self.pool1(e1)
+        e2 = self.enc2(p1)
+        p2 = self.pool2(e2)
 
         # Bottleneck
-        b = self.bottleneck(p1)
+        b = self.bottleneck(p2)
 
         # Decoder
-        u1 = self.up1(b)
+        u2 = self.up2(b)
+        d2 = self.dec2(torch.cat([u2, e2], dim=1))
+        u1 = self.up1(d2)
         d1 = self.dec1(torch.cat([u1, e1], dim=1))
 
         out = self.final_conv(d1)
@@ -63,7 +71,7 @@ class UNetDepthwiseNano(nn.Module):
 # --- Model Summary and FLOPs (Optional) ---
 if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model = UNetDepthwiseNano(in_channels=3, out_channels=1).to(device)
+    model = UNetDepthwiseSmall(in_channels=3, out_channels=1).to(device)
     dummy_input = torch.randn(1, 3, 256, 256).to(device)
     output = model(dummy_input)
     print(f"Output shape: {output.shape}")

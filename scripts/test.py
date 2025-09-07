@@ -17,6 +17,7 @@ from tqdm import tqdm
 from models.unet import UNet
 from models.unet_depthwise import UNetDepthwise
 from models.unet_depthwise_nano import UNetDepthwiseNano
+from models.unet_depthwise_small import UNetDepthwiseSmall
 from utils.checkpoint import load_checkpoint
 
 # --- Inference Function ---
@@ -107,6 +108,8 @@ def main():
         model = UNet(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise":
         model = UNetDepthwise(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
+    elif model_type == "unet_depthwise_small":
+        model = UNetDepthwiseSmall(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     elif model_type == "unet_depthwise_nano":
         model = UNetDepthwiseNano(in_channels=config["in_channels"], out_channels=config["out_channels"]).to(device)
     else:
