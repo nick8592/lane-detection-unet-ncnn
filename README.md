@@ -204,26 +204,40 @@ This will save the output mask and overlay images to the specified paths.
 
 ## Codebase Directory Tree
 ```
-UNet/
-├── checkpoints/
+lane-detection-unet-ncnn/
+├── checkpoints
+│   ├── exp_20250906_223222
+│   │   ├── bdd100k_val_outputs
+│   │   │   ├── config
+│   │   │   └── inference_results
+│   │   ├── config
+│   │   │   └── train_config.yaml
+│   │   ├── ncnn_models
+│   │   │   ├── unet_jit.ncnn.bin
+│   │   │   └── unet_jit.ncnn.param
+│   │   └── weights
+│   │       └── unet_best.pt
+│   ├── exp_20250907_094745
+|   └── ...   
 ├── config/
 │   ├── test_config.yaml
 │   └── train_config.yaml
 ├── datasets/
 │   └── bdd100k.py
 ├── export/
-│   ├── export_to_ncnn.py
-│   └── export_to_pnnx.py
+│   └── export_to_ncnn.py
 ├── models/
 │   ├── unet.py
 │   ├── unet_depthwise.py
+│   ├── unet_depthwise_small.py
 │   └── unet_depthwise_nano.py
 ├── ncnn/
 ├── ncnn_deploy/
-│   ├── CMakeLists.txt
 │   ├── build/
-│   ├── main.cpp
-│   └── ncnn_models/
+|   |   ├── input.jpg
+│   |   └── unet_ncnn
+│   ├── CMakeLists.txt
+│   └── main.cpp
 ├── requirements.txt
 ├── runs/
 ├── scripts/
