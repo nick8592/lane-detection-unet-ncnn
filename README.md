@@ -13,6 +13,20 @@ Features:
 
 ---
 
+## Table of Contents
+- [Overview](#unet-lane-segmentation--ncnn-deployment)
+- [Setup Instructions](#setup-instructions)
+- [Dataset](#dataset)
+- [Pretrained Models on Hugging Face](#pretrained-models-on-hugging-face)
+- [Training Usage](#training-usage)
+- [Inference Usage](#inference-usage)
+- [Exporting Model for NCNN Deployment](#exporting-model-for-ncnn-deployment)
+- [NCNN Library Setup](#ncnn-library-setup)
+- [NCNN C++ Deployment](#ncnn-c-deployment)
+- [Codebase Directory Tree](#codebase-directory-tree)
+
+---
+
 ## Setup Instructions
 
 ### 1. Quick Start (Docker)
@@ -62,6 +76,19 @@ bdd100k/
 - `lane/masks/train` and `val` contain binary lane segmentation masks.
 - `lane/colormaps` and `lane/polygons` provide additional annotation formats.
 
+## Pretrained Models on Hugging Face
+
+
+Pretrained weights for all UNet variants are available on Hugging Face:
+
+| Model                | PyTorch (.pt)         | NCNN (.param, .bin)         | Repo Link |
+|----------------------|----------------------|-----------------------------|-----------|
+| UNetDepthwise        | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise) |
+| UNetDepthwiseSmall   | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise_small) |
+| UNetDepthwiseNano    | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise_nano) |
+
+Each folder contains both PyTorch (.pt) and NCNN (.param, .bin) files for direct use in Python or C++ inference workflows.
+
 #### Usage in This Project
 - Update `config/train_config.yaml` and `config/test_config.yaml` to point to your local BDD100K image and mask directories.
 - The dataset loader expects images and masks to be sorted and matched by filename.
@@ -96,7 +123,6 @@ Output masks will be saved in the specified output directory. Progress is shown 
 ---
 
 ## Exporting Model for NCNN Deployment
-
 
 ### 1. Export PyTorch Model and NCNN Files
 Run the export script to convert your trained UNet model to TorchScript and directly export NCNN `.param` and `.bin` files:
@@ -186,6 +212,7 @@ UNet/
 ├── datasets/
 │   └── bdd100k.py
 ├── export/
+│   ├── export_to_ncnn.py
 │   └── export_to_pnnx.py
 ├── models/
 │   ├── unet.py
