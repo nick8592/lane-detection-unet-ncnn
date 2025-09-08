@@ -129,6 +129,7 @@ make install
 
 ## NCNN C++ Deployment
 
+
 ### 1. Build NCNN C++ Inference Code
 Go to the deployment folder:
 ```bash
@@ -143,13 +144,35 @@ set(ncnn_DIR "/path/to/ncnn/install/lib/cmake/ncnn")
 include_directories("/path/to/ncnn/install/include")
 ```
 
-### 2. Run Inference
+### 2. Run Inference (Flexible CLI)
+You can now run the C++ inference with flexible command-line options:
 ```bash
-./unet_ncnn <input_image>
+./unet_ncnn key=value ...
 ```
-This will save the output mask as `output_mask.png`.
+Supported keys (all optional, defaults shown):
+```
+input_image=/path/to/image.jpg
+model_param=../../checkpoints/exp_20250907_172056/ncnn_models/unet_jit.ncnn.param
+model_bin=../../checkpoints/exp_20250907_172056/ncnn_models/unet_jit.ncnn.bin
+output_mask=mask.jpg
+output_overlay=overlay.jpg
+input_w=256
+input_h=256
+input_layer=in0
+output_layer=out0
+mask_alpha=0.8
+```
+Example:
+```bash
+./unet_ncnn input_image=img.jpg mask_alpha=0.5 output_mask=mask.png output_overlay=overlay.png
+```
+This will save the output mask and overlay images to the specified paths.
 
-### 3. Troubleshooting
+### 3. Output Files
+- `output_mask` (default: mask.jpg): Lane mask image
+- `output_overlay` (default: overlay.jpg): Lane overlay visualization
+
+### 4. Troubleshooting
 - If CMake cannot find protobuf, try:
   ```bash
   cmake .. -DProtobuf_INCLUDE_DIR=/usr/include -DProtobuf_LIBRARIES=/usr/lib/x86_64-linux-gnu/libprotobuf.so
