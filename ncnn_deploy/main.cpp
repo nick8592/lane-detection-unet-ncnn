@@ -47,7 +47,6 @@ int main(int argc, char** argv) {
     ex.extract("out0", out); // Use actual output layer name from pnnx output
 
     // Post-process and save mask
-    // Convert output to uint8 and scale to [0, 255]
     cv::Mat mask(256, 256, CV_8UC1);
     for (int y = 0; y < 256; y++) {
         for (int x = 0; x < 256; x++) {
@@ -58,6 +57,33 @@ int main(int argc, char** argv) {
     // Resize mask back to original image size (bilinear interpolation)
     cv::resize(mask, mask, cv::Size(input_image.cols, input_image.rows), 0, 0, cv::INTER_LINEAR);
     cv::imwrite("output_mask.jpg", mask);
-    std::cout << "Inference done, mask saved as output_mask.jpg." << std::endl;
+
+    // Invert mask before overlay (white lane, black background)
+    cv::Mat mask_inv;
+    cv::bitwise_not(mask, mask_inv);
+
+    // --- Overlay output ---
+    // Create green overlay with alpha from inverted mask
+    cv::Mat overlay(input_image.size(), CV_8UC3, cv::Scalar(0, 255, 0));
+    cv::Mat mask_alpha;
+    mask_inv.convertTo(mask_alpha, CV_32FC1, 0.8 / 255.0); // scale alpha to 0.8
+    std::vector<cv::Mat> overlay_channels;
+    cv::split(overlay, overlay_channels);
+    cv::Mat blended;
+    input_image.convertTo(input_image, CV_32FC3);
+    overlay.convertTo(overlay, CV_32FC3);
+    blended = input_image.clone();
+    for (int y = 0; y < blended.rows; y++) {
+        for (int x = 0; x < blended.cols; x++) {
+            float alpha = mask_alpha.at<float>(y, x);
+            for (int c = 0; c < 3; c++) {
+                blended.at<cv::Vec3f>(y, x)[c] =
+                    (1.0f - alpha) * input_image.at<cv::Vec3f>(y, x)[c] + alpha * overlay.at<cv::Vec3f>(y, x)[c];
+            }
+        }
+    }
+    blended.convertTo(blended, CV_8UC3);
+    cv::imwrite("output_overlay.jpg", blended);
+    std::cout << "Inference done, mask saved as output_mask.jpg, overlay saved as output_overlay.jpg." << std::endl;
     return 0;
 }
