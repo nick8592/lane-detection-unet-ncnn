@@ -40,11 +40,18 @@ int main(int argc, char** argv) {
     net.load_param("../../checkpoints/exp_20250907_172056/ncnn_models/unet_jit.ncnn.param");
     net.load_model("../../checkpoints/exp_20250907_172056/ncnn_models/unet_jit.ncnn.bin");
 
-    // Run inference
+    // Run inference with timing
+    auto time_start = std::chrono::high_resolution_clock::now();
     ncnn::Extractor ex = net.create_extractor();
     ex.input("in0", in); // Use actual input layer name from pnnx output
     ncnn::Mat out;
     ex.extract("out0", out); // Use actual output layer name from pnnx output
+    auto time_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> elapsed = time_end - time_start;
+    double ms = elapsed.count() * 1000.0;
+    double fps = 1000.0 / ms;
+    std::cout << "Model inference time: " << ms << " ms" << std::endl;
+    std::cout << "FPS: " << fps << std::endl;
 
     // Post-process and save mask
     cv::Mat mask(256, 256, CV_8UC1);
