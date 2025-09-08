@@ -97,21 +97,15 @@ Output masks will be saved in the specified output directory. Progress is shown 
 
 ## Exporting Model for NCNN Deployment
 
-### 1. Export PyTorch Model to TorchScript
-Run the export script to convert your trained UNet model to TorchScript:
-```bash
-python export/export_to_pnnx.py
-```
-This will generate `unet_jit.pt` in `export/ncnn_models/`.
 
-### 2. Convert TorchScript to NCNN Format with pnnx
-Run pnnx to generate NCNN model files:
+### 1. Export PyTorch Model and NCNN Files
+Run the export script to convert your trained UNet model to TorchScript and directly export NCNN `.param` and `.bin` files:
 ```bash
-pnnx ncnn_deploy/ncnn_models/unet_jit.pt inputshape=[1,3,256,256]
+python export/export_to_ncnn.py
 ```
-This will create `unet_jit.param` and `unet_jit.bin` in `export/ncnn_models/`.
+This will generate `unet_jit.pt`, `unet_jit.param`, and `unet_jit.bin` in the output directory specified in your config. No manual pnnx command is needed.
 
-### 3. Deploy with NCNN
+### 2. Deploy with NCNN
 Use the generated `.param` and `.bin` files for the later NCNN C++ deployment.
 Refer to [NCNN documentation](https://github.com/Tencent/ncnn/wiki) for integration details.
 
