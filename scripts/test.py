@@ -8,6 +8,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import Any, Dict, Tuple
 
+import time
 import yaml
 import torch
 import numpy as np
@@ -131,15 +132,31 @@ def main():
     ])
     
     image_files = [f for f in os.listdir(input_img_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))]
-    for img_name in tqdm(image_files, desc="Inference", unit="img"):
+    pbar = tqdm(image_files, desc="Inference", unit="img")
+    times = []
+    fps_list = []
+    for img_name in pbar:
         img_path = os.path.join(input_img_dir, img_name)
+        start_time = time.time()
         mask_img, overlay_img = infer(model, device, img_path, infer_transform)
+        elapsed = (time.time() - start_time) * 1000  # ms
+        fps = 1000.0 / elapsed if elapsed > 0 else 0.0
+        times.append(elapsed)
+        fps_list.append(fps)
 
         # Save mask
         mask_img.save(os.path.join(output_mask_dir, f"mask_{img_name}"))
 
         # Save overlay image
         overlay_img.save(os.path.join(output_overlay_dir, f"overlay_{img_name}"))
+
+        pbar.set_postfix({"time_ms": f"{elapsed:.1f}", "fps": f"{fps:.1f}"})
+
+    if times:
+        avg_time = sum(times) / len(times)
+        avg_fps = sum(fps_list) / len(fps_list)
+        print(f"\nAverage inference time: {avg_time:.2f} ms")
+        print(f"Average FPS: {avg_fps:.2f}")
 
 # --- Entrypoint ---
 if __name__ == "__main__":
