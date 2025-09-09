@@ -1,0 +1,11 @@
+# Config for model comparison script
+img_size: 256
+in_channels: 3
+out_channels: 1
+inference_images_dir: /home/nick/Documents/dataset/bdd100k/images/100k/val
+inference_gt_mask_dir: /home/nick/Documents/dataset/bdd100k/labels/lane/masks/val
+num_images: 1000  # Set to null or remove to evaluate all images
+unet_checkpoint: checkpoints/exp_20250908_172015/weights/unet_best.pt
+unet_depthwise_checkpoint: checkpoints/exp_20250907_172056/weights/unet_best.pt
+unet_depthwise_small_checkpoint: checkpoints/exp_20250907_094745/weights/unet_best.pt
+unet_depthwise_nano_checkpoint: checkpoints/exp_20250906_223222/weights/unet_best.pt
