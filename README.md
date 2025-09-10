@@ -275,10 +275,13 @@ If you use this repository or models in your research, please cite as follows:
 
 **BibTeX:**
 ```
-@software{lane-detection-unet-ncnn,
-  author = {Nick Pai},
-  title = {UNet Lane Segmentation & NCNN Deployment},
-  year = {2025},
-  url = {https://github.com/nick8592/lane-detection-unet-ncnn}}
+@software{Pai_UNet_Lane_Segmentation_2025,
+author = {Pai, Nick},
+license = {MIT},
+month = sep,
+title = {{UNet Lane Segmentation \& NCNN Deployment}},
+url = {https://github.com/nick8592/lane-detection-unet-ncnn},
+version = {1.0.0},
+year = {2025}
 }
 ```
