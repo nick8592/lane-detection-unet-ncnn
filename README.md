@@ -1,8 +1,10 @@
 # UNet Lane Segmentation & NCNN Deployment
 
-This repository provides a complete pipeline for lane segmentation using a UNet model trained on the BDD100K dataset. It includes modular scripts for training, validation, and inference, with configuration-driven workflows and TensorBoard logging. The project supports exporting PyTorch models for deployment with the NCNN framework, enabling efficient inference on ARM and x86 platforms via C++.
+![america_highway](assets/america_highway_x86_unet_comparison.gif)
 
-Features:
+This repository provides a pipeline for lane segmentation using a UNet model trained on the BDD100K dataset. It includes modular scripts for training, validation, and inference, with configuration-driven workflows and TensorBoard logging. The project supports exporting PyTorch models for deployment with the NCNN framework, enabling efficient inference on ARM and x86 platforms via C++.
+
+## Features
 - UNet architecture for lane segmentation
 - BDD100K dataset integration
 - Configurable training and inference scripts
@@ -58,6 +60,7 @@ BDD100K is a large-scale driving video dataset for diverse road scenes, widely u
 - Official website: https://bdd-data.berkeley.edu/
 - Download the images and lane mask annotations from the BDD100K website or via their download scripts.
 - Organize the dataset as follows:
+
 ```
 bdd100k/
 ├── images/
@@ -76,14 +79,15 @@ bdd100k/
 - `lane/masks/train` and `val` contain binary lane segmentation masks.
 - `lane/colormaps` and `lane/polygons` provide additional annotation formats.
 
-## Pretrained Models on Hugging Face
+---
 
+## Pretrained Models on Hugging Face
 
 Pretrained weights for all UNet variants are available on Hugging Face:
 
 | Model                | PyTorch (.pt)         | NCNN (.param, .bin)         | Repo Link |
 |----------------------|----------------------|-----------------------------|-----------|
-| UNet        | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet) |
+| UNet                 | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet/unet_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet) |
 | UNetDepthwise        | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise/unet_depthwise_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise) |
 | UNetDepthwiseSmall   | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_small/unet_depthwise_small_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise_small) |
 | UNetDepthwiseNano    | [pt](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_best.pt) | [param](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_jit.ncnn.param), [bin](https://huggingface.co/nickpai/lane-detection-unet-ncnn/blob/main/unet_depthwise_nano/unet_depthwise_nano_jit.ncnn.bin) | [repo](https://huggingface.co/nickpai/lane-detection-unet-ncnn/tree/main/unet_depthwise_nano) |
@@ -93,6 +97,8 @@ Each folder contains both PyTorch (.pt) and NCNN (.param, .bin) files for direct
 #### Usage in This Project
 - Update `config/train_config.yaml` and `config/test_config.yaml` to point to your local BDD100K image and mask directories.
 - The dataset loader expects images and masks to be sorted and matched by filename.
+
+---
 
 ## Training Usage
 
@@ -109,6 +115,8 @@ TensorBoard logs are available in `runs/`. To view training progress:
 ```bash
 tensorboard --logdir runs/
 ```
+
+---
 
 ## Inference Usage
 
@@ -136,6 +144,8 @@ This will generate `unet_jit.pt`, `unet_jit.param`, and `unet_jit.bin` in the ou
 Use the generated `.param` and `.bin` files for the later NCNN C++ deployment.
 Refer to [NCNN documentation](https://github.com/Tencent/ncnn/wiki) for integration details.
 
+---
+
 ## NCNN Library Setup
 
 To build NCNN from source:
@@ -148,8 +158,9 @@ make -j$(nproc)
 make install
 ```
 
-## NCNN C++ Deployment
+---
 
+## NCNN C++ Deployment
 
 ### 1. Build NCNN C++ Inference Code
 Go to the deployment folder:
@@ -200,6 +211,12 @@ This will save the output mask and overlay images to the specified paths.
   ```
 - If CMake cannot find NCNN, set `ncnn_DIR` to the folder containing `ncnnConfig.cmake`.
 - For ARM cross-compilation, set toolchain and paths as needed.
+
+---
+
+## Results Comparison:
+![hsinchu_to_taipei](assets/hsinchu_to_taipei_1k_x86_unet_comparison.gif)
+![taichung_city](assets/taichung_city_x86_unet_comparison.gif)
 
 ---
 
