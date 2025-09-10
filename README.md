@@ -268,3 +268,17 @@ lane-detection-unet-ncnn/
 ├── README.md
 └── .gitignore
 ```
+
+## Citation
+
+If you use this repository or models in your research, please cite as follows:
+
+**BibTeX:**
+```
+@software{lane-detection-unet-ncnn,
+  author = {Nick Pai},
+  title = {UNet Lane Segmentation & NCNN Deployment},
+  year = {2025},
+  url = {https://github.com/nick8592/lane-detection-unet-ncnn}}
+}
+```
