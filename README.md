@@ -27,6 +27,7 @@ This repository provides a pipeline for lane segmentation using a UNet model tra
 - [NCNN C++ Deployment](#ncnn-c-deployment)
 - [Gradio Lane Detection Demo](#gradio-lane-detection-demo)
 - [Results Comparison](#results-comparison)
+- [Model Architecture Comparison](#model-architecture-comparison)
 - [Codebase Directory Tree](#codebase-directory-tree)
 - [Citation](#citation)
 
@@ -239,15 +240,6 @@ python3 gradio_app/app.py
 
 ---
 
-## Results Comparison:
-https://github.com/user-attachments/assets/8374a74f-d099-4abe-b271-90367a35c47b
-
-https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e 
-
-https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58   
-
----
-
 ## Model Architecture Comparison
 
 | Model                | Parameters   | FLOPs (GFLOPs) | Estimated Size (MB) |
@@ -260,6 +252,15 @@ https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58
 - All models use input size (1, 3, 256, 256).
 - FLOPs measured with ptflops (GMac).
 - Estimated size includes input, activations, and parameters.
+
+---
+
+## Results Comparison:
+https://github.com/user-attachments/assets/8374a74f-d099-4abe-b271-90367a35c47b
+
+https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e 
+
+https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58   
 
 ---
 
