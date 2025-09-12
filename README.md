@@ -267,6 +267,9 @@ https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58
 ## Codebase Directory Tree
 ```
 lane-detection-unet-ncnn/
+├── assets/
+│   ├── demo.jpg
+│   └──gradio_app.jpg
 ├── checkpoints
 │   ├── exp_20250906_223222
 │   │   ├── bdd100k_val_outputs
@@ -282,12 +285,16 @@ lane-detection-unet-ncnn/
 │   ├── exp_20250907_094745
 |   └── ...   
 ├── config/
+│   ├── eval_config.yaml
+│   ├── export_config.yaml
 │   ├── test_config.yaml
 │   └── train_config.yaml
 ├── datasets/
 │   └── bdd100k.py
 ├── export/
 │   └── export_to_ncnn.py
+├── gradio_app/
+│   └── app.py
 ├── models/
 │   ├── unet.py
 │   ├── unet_depthwise.py
@@ -300,7 +307,6 @@ lane-detection-unet-ncnn/
 │   |   └── unet_ncnn
 │   ├── CMakeLists.txt
 │   └── main.cpp
-├── requirements.txt
 ├── runs/
 ├── scripts/
 │   ├── test.py
@@ -308,9 +314,11 @@ lane-detection-unet-ncnn/
 ├── utils/
 │   ├── checkpoint.py
 │   └── metrics.py
+├── .gitignore
+├── CITATION.cff
 ├── LICENSE
 ├── README.md
-└── .gitignore
+└── requirements.txt
 ```
 
 ## Citation

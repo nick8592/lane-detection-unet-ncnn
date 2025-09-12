@@ -54,3 +54,6 @@ ncnn_deploy/ncnn_models/
 *.onnx
 *.param
 *.bin
+
+# Gradio
+flagged/
