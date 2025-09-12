@@ -25,7 +25,10 @@ This repository provides a pipeline for lane segmentation using a UNet model tra
 - [Exporting Model for NCNN Deployment](#exporting-model-for-ncnn-deployment)
 - [NCNN Library Setup](#ncnn-library-setup)
 - [NCNN C++ Deployment](#ncnn-c-deployment)
+- [Gradio Lane Detection Demo](#gradio-lane-detection-demo)
+- [Results Comparison](#results-comparison)
 - [Codebase Directory Tree](#codebase-directory-tree)
+- [Citation](#citation)
 
 ---
 
@@ -214,6 +217,28 @@ This will save the output mask and overlay images to the specified paths.
 
 ---
 
+## Gradio Lane Detection Demo
+
+You can try the lane detection models interactively in your browser using Gradio:
+
+- **Hugging Face Space:** [Lane Detection UNet Demo](https://huggingface.co/spaces/nickpai/lane-detection-unet)
+
+![Gradio App UI](assets/gradio_app.jpg)
+
+### Local Usage
+
+To run the Gradio app locally:
+
+```bash
+pip install -r requirements.txt
+python3 gradio_app/app.py
+```
+
+- Upload a road image and select a model type (UNet, UNetDepthwise, UNetDepthwiseSmall, UNetDepthwiseNano).
+- The app will display the lane detection overlay result.
+
+---
+
 ## Results Comparison:
 ![hsinchu_to_taipei](assets/hsinchu_to_taipei_1k_x86_unet_comparison.gif)
 ![taichung_city](assets/taichung_city_x86_unet_comparison.gif)
@@ -285,3 +310,5 @@ version = {1.0.0},
 year = {2025}
 }
 ```
+
+---
