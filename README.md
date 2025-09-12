@@ -1,6 +1,6 @@
 # UNet Lane Segmentation & NCNN Deployment
 
-![america_highway](assets/america_highway_x86_unet_comparison.gif)
+https://github.com/user-attachments/assets/8374a74f-d099-4abe-b271-90367a35c47b
 
 This repository provides a pipeline for lane segmentation using a UNet model trained on the BDD100K dataset. It includes modular scripts for training, validation, and inference, with configuration-driven workflows and TensorBoard logging. The project supports exporting PyTorch models for deployment with the NCNN framework, enabling efficient inference on ARM and x86 platforms via C++.
 
@@ -240,8 +240,9 @@ python3 gradio_app/app.py
 ---
 
 ## Results Comparison:
-![hsinchu_to_taipei](assets/hsinchu_to_taipei_1k_x86_unet_comparison.gif)
-![taichung_city](assets/taichung_city_x86_unet_comparison.gif)
+
+https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e   
+https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58   
 
 ---
 
