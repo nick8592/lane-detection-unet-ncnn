@@ -248,6 +248,21 @@ https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58
 
 ---
 
+## Model Architecture Comparison
+
+| Model                | Parameters   | FLOPs (GFLOPs) | Estimated Size (MB) |
+|----------------------|--------------|----------------|---------------------|
+| UNet                 | 31,043,521   | 54.79          | 700.10              |
+| UNetDepthwise        | 4,216,799    | 11.57          | 480.08              |
+| UNetDepthwiseSmall   | 253,919      | 5.88           | 385.58              |
+| UNetDepthwiseNano    | 52,191       | 3.00           | 279.92              |
+
+- All models use input size (1, 3, 256, 256).
+- FLOPs measured with ptflops (GMac).
+- Estimated size includes input, activations, and parameters.
+
+---
+
 ## Codebase Directory Tree
 ```
 lane-detection-unet-ncnn/
