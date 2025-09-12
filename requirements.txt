@@ -11,3 +11,4 @@ opencv-python-headless
 onnx
 onnxsim
 seaborn
+gradio
