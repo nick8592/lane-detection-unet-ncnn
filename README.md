@@ -241,7 +241,8 @@ python3 gradio_app/app.py
 
 ## Results Comparison:
 
-https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e   
+https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e 
+
 https://github.com/user-attachments/assets/caa45672-4c05-4785-adb3-775b85c3ee58   
 
 ---
