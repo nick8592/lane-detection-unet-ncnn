@@ -255,7 +255,7 @@ python3 gradio_app/app.py
 
 ---
 
-## Results Comparison:
+## Results Comparison
 https://github.com/user-attachments/assets/8374a74f-d099-4abe-b271-90367a35c47b
 
 https://github.com/user-attachments/assets/6a966997-c573-4b0c-b237-48ce14f6596e 
