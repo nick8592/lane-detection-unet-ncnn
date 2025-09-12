@@ -26,8 +26,8 @@ This repository provides a pipeline for lane segmentation using a UNet model tra
 - [NCNN Library Setup](#ncnn-library-setup)
 - [NCNN C++ Deployment](#ncnn-c-deployment)
 - [Gradio Lane Detection Demo](#gradio-lane-detection-demo)
-- [Results Comparison](#results-comparison)
 - [Model Architecture Comparison](#model-architecture-comparison)
+- [Results Comparison](#results-comparison)
 - [Codebase Directory Tree](#codebase-directory-tree)
 - [Citation](#citation)
 
